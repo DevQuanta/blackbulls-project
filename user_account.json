@@ -1,34 +1,19 @@
 {
-  "ds.email": {
+  "daksh@gmail.com": {
     "name": "daksh",
-    "email": "ds.email",
-    "password": "123",
+    "email": "daksh@gmail.com",
+    "password": "$2b$12$d0B53nZ7ZVi5DneVoiJ.QucZaxSZcxyUSoMVcX9A1bXj1mCBcSHie",
     "basket": {
-      "items": {},
-      "total_price": 0,
+      "items": {
+        "Titos Homemade Vodka": {
+          "quantity": 2,
+          "product_id": 0,
+          "price": 18.5
+        }
+      },
+      "total_price": 18.5,
       "tax": 0
     },
-    "orders": [
-      {
-        "order_id": "TX_2159605416",
-        "items": {
-          "Another Hendricks Gin": {
-            "quantity": 10,
-            "product_id": 1,
-            "price": 33.5
-          },
-          "Bumbu original": {
-            "quantity": 2,
-            "product_id": 3,
-            "price": 38.5
-          }
-        },
-        "delivery_details": {
-          "postcode": "123"
-        },
-        "total_price": 72.0,
-        "payment_status": "completed"
-      }
-    ]
+    "orders": []
   }
 }
