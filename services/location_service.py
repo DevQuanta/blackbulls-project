@@ -1,5 +1,5 @@
 import requests
-from environment import API_KEY
+from environment import API_KEY, LAET_POSTCODE, LAET_COUNTRY_CODE
 
 def validate_postcode(postcode, country_code):
     address = lookup_postcode(postcode, country_code)
@@ -11,11 +11,15 @@ def validate_postcode(postcode, country_code):
     return address
 
 
-def calculate_distance(point1, point2):
-    url = "https://api.geoapify.com/v1/geometry/operation"
+def calculate_distance(delivery_postcode, country_code):
 
-    print('\nPoints:')
-    print(point1, point2)
+    delivery_details = validate_postcode(delivery_postcode, country_code)
+    laet_details = validate_postcode(LAET_POSTCODE, LAET_COUNTRY_CODE)
+
+    point1 = get_lat_long(laet_details)
+    point2 = get_lat_long(delivery_details)
+
+    url = "https://api.geoapify.com/v1/geometry/operation"
 
     request_body = {
         "operation": "distance",
@@ -69,3 +73,15 @@ def lookup_postcode(postcode, country_code):
             return result
 
     return None
+
+
+
+def get_address(details):
+    return details["properties"]["address_line1"]
+
+def get_lat_long(details):
+    return {
+        'lon': details["properties"]["lon"],
+        'lat': details["properties"]["lat"]
+    }
+

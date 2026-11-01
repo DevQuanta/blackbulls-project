@@ -1,10 +1,8 @@
 import json
 from environment import ACCOUNT_FILE
-import questionary
-from services.validation_service import validate_email, validate_password
 from services.password_service import generate_hash, check_password
 
-def create_account(guest_account = False):
+def create_account(name, email, password, guest_account = False):
     if guest_account:
         return {
                     'name': 'Guest',
@@ -15,16 +13,7 @@ def create_account(guest_account = False):
                     },
                     'orders': []
                 }
-  
-    name = questionary.text("What is your name? ").ask()
-    email = questionary.text("What is your email? ", validate=validate_email).ask()
-    password = questionary.password("What is your password? ", validate=validate_password).ask()
-    repeat_password = questionary.password("Please confirm your password: ").ask()
 
-    while repeat_password != password:
-        print("To confirm your password...you must type it out again.")
-        password = questionary.password("What is your password? ", validate=validate_password).ask()
-        repeat_password = questionary.password("Please confirm your password: ").ask()
 
     hashed = generate_hash(password).decode()
     
@@ -76,15 +65,33 @@ def update_account(account):
         json.dump(existing_accounts, accounts_file, indent=2)
 
 def fetch_orders(account):
+    summary = []
+
     for order in account.get('orders', {}):
-            print(f'Order ID: {order["order_id"]}')
-            print(f'Items ordered:')
+            order_summary = {}
+            order_summary['order_id'] = order["order_id"]
+            order_summary['products'] = []
+            
             for name, product in order["items"].items():
-                print(f"ID #{product["product_id"]} {name}")
-                print(f"Quantity: {product["quantity"]}")
-                print(f"Price: £{product["price"]}\n")
+                product = {
+                    'id': product["product_id"],
+                    'name': name,
+                    'quantity': product["quantity"],
+                    'price': product['price']
+                }
 
-            print(f'Delivery Address: {order["delivery_details"]["postcode"]}')
-            print(f'Price paid: £{order["total_price"]}')
-            print(f'Payment status: {order["payment_status"]}')
+                order_summary['products'].append(product)
 
+            order_summary['delivery_details'] = {
+                'address': order["delivery_details"]["address"],
+                'postcode': order["delivery_details"]["postcode"],
+            }
+
+            order_summary['billing_payment'] = {
+                'total_price': order["total_price"],
+                'payment_status': order["payment_status"]
+            }
+
+            summary.append(order_summary)
+
+    print(summary)

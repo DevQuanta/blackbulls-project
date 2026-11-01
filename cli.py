@@ -1,7 +1,9 @@
-from services.products_services import browse_products
-from services.display_service import fetch_basket
-from services.account_service import get_account, create_account, fetch_orders
-from services.payment_service import checkout_basket
+from commands.basket_commands import checkout_basket
+from services.account_service import fetch_orders
+from commands.account_commands import create_account_command
+from ui.products_ui import fetch_basket
+from commands.products_commands import browse_products
+from commands.account_commands import login_account_command
 
 import questionary
 
@@ -14,7 +16,7 @@ def logged_in_mode(account):
         'name': item, 'value': idx
     } for idx, item in enumerate(menu_items)]
 
-    option_idx = questionary.select("Choose an action", choices=choices).ask()
+    option_idx = questionary.select("Choose an action", choices=choices).unsafe_ask()
     
     while option_idx is not None:
         match option_idx:
@@ -29,7 +31,7 @@ def logged_in_mode(account):
             case 4:
                 break
 
-        option_idx = questionary.select("Choose an action:", choices=choices).ask()
+        option_idx = questionary.select("Choose an action:", choices=choices).unsafe_ask()
                 
 
 def guest_mode():
@@ -40,10 +42,9 @@ def guest_mode():
         for idx, item in enumerate(menu_items)
     ]
 
-    # option = input("Would you like to:\n1. View basket\n2. Checkout basket\n3. Add products\n4. Quit\n> ")
-    option_idx = questionary.select("Choose an action", choices = choices).ask()
+    option_idx = questionary.select("Choose an action", choices = choices).unsafe_ask()
     
-    account = create_account(guest_account=True)
+    account = create_account_command(guest_account=True)
     
     while option_idx is not None:
         match option_idx:
@@ -56,46 +57,46 @@ def guest_mode():
             case 3:
                 break
 
-        # option = input("Would you like to:\n1. View basket\n2. Checkout basket\n3. Add products\n4. Quit\n> ")
-
-        option_idx = questionary.select("What would you like to do?", choices = choices).ask()
+        option_idx = questionary.select("What would you like to do?", choices = choices).unsafe_ask()
 
 def main():
-    menu_items = ["Sign in", "Create an account", "Continue as guest", "Quit"]
-        
-    choices = [
-        {"name": item, "value": idx} 
-        for idx, item in enumerate(menu_items)
-    ]
+    try:
+        menu_items = ["Sign in", "Create an account", "Continue as guest", "Quit"]
+            
+        choices = [
+            {"name": item, "value": idx} 
+            for idx, item in enumerate(menu_items)
+        ]
 
-    option_idx = questionary.select("Choose an action:", choices=choices).ask()
+        option_idx = questionary.select("Choose an action:", choices=choices).unsafe_ask()
 
-    while option_idx is not None:
+        while option_idx is not None:
 
-        match option_idx:
-            case 0:
-                email = questionary.text("Please enter your email: ").ask()
-                password = questionary.password("Please enter your password: ").ask()
-                account = get_account(email, password)
+            match option_idx:
+                case 0:
+                    account = login_account_command()
 
-                while account is None:
-                    print("Incorrect email or password. Please try again!\n")
-                    email = questionary.text("Please enter your email: ").ask()
-                    password = questionary.password("Please enter your password: ").ask()
-                    account = get_account(email, password)
+                    if account is None:
+                        continue
 
-                logged_in_mode(account)
+                    logged_in_mode(account)
 
-            case 1:
-                account = create_account()
-                logged_in_mode(account)
+                case 1:
+                    account = create_account_command()
 
-            case 2:
-                guest_mode()
+                    if account is None:
+                        continue
 
-            case 3:
-                break
-        
-        option_idx = questionary.select("Choose an action:", choices=choices).ask()
+                    logged_in_mode(account)
+
+                case 2:
+                    guest_mode()
+
+                case 3:
+                    break
+            
+            option_idx = questionary.select("Choose an action:", choices=choices).unsafe_ask()
+    except KeyboardInterrupt:
+        print("Gracefully exiting application")
     
 main()
