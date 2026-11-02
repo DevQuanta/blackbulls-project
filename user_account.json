@@ -2,45 +2,37 @@
   "daksh@gmail.com": {
     "name": "daksh",
     "email": "daksh@gmail.com",
-    "password": "$2b$12$8QWJYaVP7o8HCpyb8/bffOQQIdA7lkUQXUkgdR1NaF3QzCTTzsfEy",
+    "password": "$2b$12$HgH.x0MsQOU.NLRNdvTsM.9IlAJaRQ/1GYDm.AOAB2tHcmkEvTumW",
     "basket": {
       "items": {
-        "Another Hendricks Gin": {
-          "quantity": 2,
-          "product_id": 1,
-          "price": 33.5
-        },
-        "Forte Alto Pinot Grigio": {
-          "quantity": 2,
-          "product_id": 4,
-          "price": 10.0
+        "Bumbu original": {
+          "quantity": 5,
+          "product_id": 3,
+          "price": 38.5
         }
       },
-      "total_price": 43.5,
+      "total_price": 192.5,
+      "symbol": "\u00a3",
       "tax": 0
     },
-    "orders": [
-      {
-        "order_id": "TX_57213149",
-        "items": {
-          "Another Hendricks Gin": {
-            "quantity": 2,
-            "product_id": 1,
-            "price": 33.5
-          },
-          "Forte Alto Pinot Grigio": {
-            "quantity": 2,
-            "product_id": 4,
-            "price": 10.0
-          }
-        },
-        "delivery_details": {
-          "address": "92704",
-          "postcode": "92704"
-        },
-        "total_price": 43.5,
-        "payment_status": "completed"
-      }
-    ]
+    "orders": []
+  },
+  "shahed@gmail.com": {
+    "name": "Shahed",
+    "email": "shahed@gmail.com",
+    "password": "$2b$12$7ng1wXGHYtXOSv1PAVtQe.M9laEXYqsChXF7L3AFj.wgt0O1LxJI.",
+    "basket": {
+      "items": {
+        "Aperol": {
+          "quantity": 10,
+          "product_id": 2,
+          "price": 13.0
+        }
+      },
+      "total_price": 130.0,
+      "symbol": "\u00a3",
+      "tax": 0
+    },
+    "orders": []
   }
 }

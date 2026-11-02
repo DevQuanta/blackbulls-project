@@ -16,3 +16,6 @@ def validate_password(password):
 
     else:
         return True
+
+def validate_quantity(quantity):
+    return quantity > 0

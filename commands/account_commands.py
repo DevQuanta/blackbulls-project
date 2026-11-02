@@ -1,6 +1,10 @@
 import questionary
 from services.validation_service import validate_password, validate_email
-from services.account_service import create_account, get_account
+from services.account_service import create_account, get_account, create_guest_account
+from rich.console import Console
+from rich.table import Table
+
+console = Console()
 
 def login_account_command():
     email = questionary.text("Please enter your email: ").unsafe_ask()
@@ -17,7 +21,7 @@ def login_account_command():
 
 def create_account_command(guest_account = False):
     if guest_account:
-        return create_account(guest_account=True)
+        return create_guest_account()
     else:
         name = questionary.text("What is your name? ").unsafe_ask()
         email = questionary.text("What is your email? ", validate=validate_email).unsafe_ask()

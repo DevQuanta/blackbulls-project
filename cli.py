@@ -1,7 +1,6 @@
 from commands.basket_commands import checkout_basket
-from services.account_service import fetch_orders
 from commands.account_commands import create_account_command
-from ui.products_ui import fetch_basket
+from ui.products_ui import fetch_basket, diaplay_previous_orders
 from commands.products_commands import browse_products
 from commands.account_commands import login_account_command
 
@@ -27,7 +26,7 @@ def logged_in_mode(account):
             case 2:
                 browse_products(account)
             case 3:
-                fetch_orders(account)
+                diaplay_previous_orders(account)
             case 4:
                 break
 
@@ -51,9 +50,9 @@ def guest_mode():
             case 0:
                 fetch_basket(account)
             case 1:
-                checkout_basket(account)
+                checkout_basket(account, guest_mode=True)
             case 2:
-                browse_products(account, guest_mode = True)
+                browse_products(account, guest_mode=True)
             case 3:
                 break
 

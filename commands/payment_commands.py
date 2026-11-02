@@ -1,59 +1,77 @@
 import questionary
-import random
 
-from services.payment_service import complete_payment, create_pending_order, get_pending_orders
+from rich.console import Console
+from services.payment_service import complete_payment, create_pending_order, save_delivery_details
 from services.currency_exchange_service import convert_currency, get_available_currencies
+
+console = Console()
 
 def convert_currency_command(amount):
     default_currencies = get_available_currencies(excluded_currency='GBP')
 
-    for idx, currency in enumerate(default_currencies):
-            print(f'{idx + 1}. {currency}')
-    print(f"{len(default_currencies) + 1}. Other currency")
+    choices = [{
+         'name': name,
+         'value': idx
+    } for idx, name in enumerate(default_currencies)]
 
-    new_currency_idx = int(input("What currency do you want it to be converted into? ")) - 1
+    choices.append({
+         'name': 'Other currency',
+         'value': len(default_currencies)
+    })
 
-    if new_currency_idx == len(default_currencies):
+    choice = questionary.select("Choose currency to pay in", choices=choices).unsafe_ask()
+
+    if choice == len(default_currencies):
         available_currencies = get_available_currencies(default_currencies=False, excluded_currency='GBP')
 
-        for idx, currency in enumerate(available_currencies):
-            print(f'{idx + 1}. {currency}')
+        all_choices = [{
+                 'name': name,
+                 'value': idx
+            } for idx, name in enumerate(available_currencies)]
 
-        new_currency_idx = int(input("What currency do you want it to be converted into? ")) - 1
-        new_currency = available_currencies[new_currency_idx]
+        
+        choice = questionary.select("Choose currency to pay in", choices=all_choices).unsafe_ask()
+
+        new_currency = available_currencies[choice]
     else:
-        new_currency = default_currencies[new_currency_idx]
+        new_currency = default_currencies[choice]
 
-    total_price = convert_currency("GBP", new_currency, amount)
+    (symbol, total_price) = convert_currency("GBP", new_currency, amount)
+    console.print(f"The new price is [bright_cyan]{symbol}{total_price}[/bright_cyan]")
 
-    return total_price
+    return (symbol, total_price)
 
-def complete_pending_payment(account, delivery, order_id):
+def complete_pending_payment(account, order_id):
     card_number = questionary.text("Enter your card number: ").unsafe_ask()
     expiry = questionary.text("Enter card expiry (DD/YY): ").unsafe_ask()
     cvv = questionary.password("Enter CVV: ").unsafe_ask()
 
     card_details = {
-                'card_number': card_number,
-                'expiry': expiry,
-                'cvv': cvv
+        'card_number': card_number,
+        'expiry': expiry,
+        'cvv': cvv
     }
 
-    return complete_payment(account, delivery, card_details, order_id, pending=True)
+    return complete_payment(account, card_details, order_id, pending=True)
 
 
-def complete_payment_command(account, delivery, guest_mode=False):
-    print("Enter card details to proceed")
+def complete_payment_command(account, total_price, symbol, delivery, guest_mode=False):
+    order_id = create_pending_order(account, symbol, total_price, guest_mode)
+    if not guest_mode:
+        save_delivery_details(account, order_id, delivery)
+
     card_number = questionary.text("Enter your card number: ").unsafe_ask()
     expiry = questionary.text("Enter card expiry (DD/YY): ").unsafe_ask()
     cvv = questionary.password("Enter CVV: ").unsafe_ask()
 
     card_details = {
-            'card_number': card_number,
-            'expiry': expiry,
-            'cvv': cvv
+        'card_number': card_number,
+        'expiry': expiry,
+        'cvv': cvv
     }
-              
 
-    order_id = create_pending_order(account)
-    complete_payment(account, delivery, card_details, order_id)
+    complete_payment(account, card_details, order_id, guest_mode = guest_mode)
+
+    console.print("[green]Order has been confirmed![/green]")
+
+    return True

@@ -1,12 +1,15 @@
 import requests
 from environment import API_KEY, LAET_POSTCODE, LAET_COUNTRY_CODE
+from rich.console import Console
+
+console = Console()
 
 def validate_postcode(postcode, country_code):
     address = lookup_postcode(postcode, country_code)
 
     if address is None:
-        print("Postcode does not exist")
-        return None
+        console.print("[bright_red]Postcode does not exist[/bright_red]")
+        return None 
 
     return address
 
@@ -16,63 +19,74 @@ def calculate_distance(delivery_postcode, country_code):
     delivery_details = validate_postcode(delivery_postcode, country_code)
     laet_details = validate_postcode(LAET_POSTCODE, LAET_COUNTRY_CODE)
 
+    if not (delivery_details and laet_details):
+        return None
+
     point1 = get_lat_long(laet_details)
     point2 = get_lat_long(delivery_details)
 
-    url = "https://api.geoapify.com/v1/geometry/operation"
+    try:
+        url = "https://api.geoapify.com/v1/geometry/operation"
 
-    request_body = {
-        "operation": "distance",
-        "point1": {
-            "type": "Point",
-            "coordinates": [
-                point1["lon"],
-                point1["lat"]
-            ]
-        },
-        "point2": {
-            "type": "Point",
-            "coordinates": [
-                point2["lon"],
-                point2["lat"]
-            ]
-        },
-        "params": {
-            "units": "miles"
+        request_body = {
+            "operation": "distance",
+            "point1": {
+                "type": "Point",
+                "coordinates": [
+                    point1["lon"],
+                    point1["lat"]
+                ]
+            },
+            "point2": {
+                "type": "Point",
+                "coordinates": [
+                    point2["lon"],
+                    point2["lat"]
+                ]
+            },
+            "params": {
+                "units": "miles"
+            }
         }
-    }
 
-    response = requests.post(url, json=request_body, params = {
-            "apiKey": API_KEY
-    })
+        response = requests.post(url, json=request_body, params = {
+                "apiKey": API_KEY
+        })
 
-    response.raise_for_status()
+        response.raise_for_status()
 
-    response = response.json()
-    return float(f"{response['data']:.2f}")
+        response = response.json()
+        return float(f"{response['data']:.2f}")
+    except:
+        return None
 
 
 def lookup_postcode(postcode, country_code):
     url = "https://api.geoapify.com/v1/postcode/search"
 
-    response = requests.get(url, params = {
-        "postcode": postcode,
-        "countrycode": country_code.lower(),
-        "format": "geojson",
-        "apiKey": API_KEY
-    })
+    try:
 
-    response.raise_for_status()
+        response = requests.get(url, params = {
+            "postcode": postcode,
+            "countrycode": country_code.lower(),
+            "format": "geojson",
+            "apiKey": API_KEY
+        })
 
-    response = response.json()
+        response.raise_for_status()
 
-    normalise = lambda s: "".join(s.upper().split())
+        response = response.json()
 
-    for result in response.get("features", []):
-        if (normalise(result.get("properties", "").get("postcode", ""))) == normalise(postcode) and normalise(result.get("properties").get("country_code")) == normalise(country_code):
-            return result
+        normalise = lambda s: "".join(s.upper().split())
 
-    return None
+        for result in response.get("features", []):
+            if (normalise(result.get("properties", "").get("postcode", ""))) == normalise(postcode) and normalise(result.get("properties").get("country_code")) == normalise(country_code):
+                return result
+
+        return None
+    
+    except:
+        return None
 
 
 

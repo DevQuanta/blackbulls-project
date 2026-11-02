@@ -2,19 +2,20 @@ import json
 from environment import ACCOUNT_FILE
 from services.password_service import generate_hash, check_password
 
-def create_account(name, email, password, guest_account = False):
-    if guest_account:
-        return {
-                    'name': 'Guest',
-                    'basket': {
-                        'items': {},
-                        'total_price': 0,
-                        'tax': 0
-                    },
-                    'orders': []
-                }
 
+def create_guest_account():
+    return {
+                        'name': 'Guest',
+                        'basket': {
+                            'items': {},
+                            'total_price': 0,
+                            'symbol': '£',
+                            'tax': 0
+                        },
+                        'orders': []
+                    }
 
+def create_account(name, email, password):
     hashed = generate_hash(password).decode()
     
     account = {
@@ -24,6 +25,7 @@ def create_account(name, email, password, guest_account = False):
         'basket': {
             'items': {},
             'total_price': 0,
+            'symbol': '£',
             'tax': 0
         },
         'orders': []
@@ -41,6 +43,19 @@ def get_existing_accounts():
         existing_accounts = {}
 
     return existing_accounts
+
+def remove_pending_order(account, order_id):
+    remove_idx = None
+    for idx, order in enumerate(account.get("orders", [])):
+        if order["order_id"] == order_id:
+            remove_idx = idx
+
+    if remove_idx:
+        account["orders"].pop(idx)
+
+    update_account(account)
+
+    return True
 
 
 def get_account(email, password):
@@ -74,7 +89,7 @@ def fetch_orders(account):
             
             for name, product in order["items"].items():
                 product = {
-                    'id': product["product_id"],
+                    'product_id': product["product_id"],
                     'name': name,
                     'quantity': product["quantity"],
                     'price': product['price']
@@ -89,9 +104,10 @@ def fetch_orders(account):
 
             order_summary['billing_payment'] = {
                 'total_price': order["total_price"],
-                'payment_status': order["payment_status"]
+                'payment_status': order["payment_status"],
+                'symbol': order["symbol"]
             }
 
             summary.append(order_summary)
 
-    print(summary)
+    return summary

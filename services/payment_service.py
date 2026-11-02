@@ -20,7 +20,19 @@ def get_pending_orders(account):
 
     return pending_orders
 
-def create_pending_order(account, guest_mode=False):
+def save_delivery_details(account, order_id, delivery):
+    save_idx = None
+    for idx, order in enumerate(account.get("orders", [])):
+        if order["order_id"] == order_id:
+            save_idx = idx
+            break
+
+    account.get("orders", [])[save_idx]["delivery_details"] = delivery
+    update_account(account)
+
+    return True
+
+def create_pending_order(account, symbol, total_price, guest_mode=False):
     order_id = f"TX_{random.randint(1000000, 99999999)}"
 
     order = {
@@ -30,7 +42,8 @@ def create_pending_order(account, guest_mode=False):
                 'address': '',
                 'postcode': ''
             },
-            'total_price': account["basket"]["total_price"],
+            'total_price': total_price,
+            'symbol': symbol, 
             'payment_status': 'pending'
         }
 
@@ -42,26 +55,29 @@ def create_pending_order(account, guest_mode=False):
     return order_id
 
 
-def complete_payment(account, delivery, card_details, order_id, pending=False, guest_mode=False):
+def complete_payment(account, card_details, order_id, pending=False, guest_mode=False):
 
+    print(f'we are completing the payment, guest_mode = {guest_mode}')
     for idx, order in enumerate(account.get("orders", [])):
         if order.get("order_id") == order_id:
-            print('here matching')
             account["orders"][idx] = {
                 'order_id': order["order_id"],
                 'items': order["items"],
                 'delivery_details': {
-                    'address': delivery["address"],
-                    'postcode': delivery["postcode"]
+                    'address': order["delivery_details"]["address"],
+                    'postcode': order["delivery_details"]["postcode"]
                 },
                 'total_price': order["total_price"],
+                'symbol': order["symbol"], 
                 'payment_status': 'completed'
             }
 
             print(order)
 
-    if not guest_mode:
-        update_account(account)
+    if guest_mode:
+        return True
+
+    update_account(account)
 
     if not pending:
         account["basket"]["items"] = {}
