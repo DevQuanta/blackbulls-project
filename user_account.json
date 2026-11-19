@@ -9,13 +9,75 @@
           "quantity": 5,
           "product_id": 3,
           "price": 38.5
+        },
+        "Titos Homemade Vodka": {
+          "quantity": 10,
+          "product_id": 0,
+          "price": 18.5
         }
       },
-      "total_price": 192.5,
+      "total_price": 599.5,
       "symbol": "\u00a3",
       "tax": 0
     },
-    "orders": []
+    "orders": [
+      {
+        "order_id": "TX_26527457",
+        "items": {
+          "Bumbu original": {
+            "quantity": 5,
+            "product_id": 3,
+            "price": 38.5
+          }
+        },
+        "delivery_details": {
+          "address": "123",
+          "postcode": "90001"
+        },
+        "total_price": 360.5,
+        "symbol": "\u00a3",
+        "payment_status": "completed"
+      },
+      {
+        "order_id": "TX_17849794",
+        "items": {
+          "Bumbu original": {
+            "quantity": 5,
+            "product_id": 3,
+            "price": 38.5
+          }
+        },
+        "delivery_details": {
+          "address": "6",
+          "postcode": "6"
+        },
+        "total_price": "498.30",
+        "symbol": "$",
+        "payment_status": "completed"
+      },
+      {
+        "order_id": "TX_74782180",
+        "items": {
+          "Bumbu original": {
+            "quantity": 5,
+            "product_id": 3,
+            "price": 38.5
+          },
+          "Titos Homemade Vodka": {
+            "quantity": 10,
+            "product_id": 0,
+            "price": 18.5
+          }
+        },
+        "delivery_details": {
+          "address": "1234",
+          "postcode": "90001"
+        },
+        "total_price": 796.5,
+        "symbol": "\u00a3",
+        "payment_status": "completed"
+      }
+    ]
   },
   "shahed@gmail.com": {
     "name": "Shahed",
@@ -34,5 +96,41 @@
       "tax": 0
     },
     "orders": []
+  },
+  "john@gmail.com": {
+    "name": "john",
+    "email": "john@gmail.com",
+    "password": "$2b$12$knlkfiRU4GftCsu30Gkazuhs570haj0Hkdz5icKA2.vOjyC5Av3o6",
+    "basket": {
+      "items": {
+        "Titos Homemade Vodka": {
+          "quantity": 1,
+          "product_id": 0,
+          "price": 18.5
+        }
+      },
+      "total_price": 18.5,
+      "symbol": "\u00a3",
+      "tax": 0
+    },
+    "orders": [
+      {
+        "order_id": "TX_76300036",
+        "items": {
+          "Titos Homemade Vodka": {
+            "quantity": 1,
+            "product_id": 0,
+            "price": 18.5
+          }
+        },
+        "delivery_details": {
+          "address": "Wilburn Lane",
+          "postcode": "123"
+        },
+        "total_price": "2.28",
+        "symbol": "\u09f3",
+        "payment_status": "pending"
+      }
+    ]
   }
 }

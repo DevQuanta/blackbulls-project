@@ -15,7 +15,7 @@ def checkout_basket(account, guest_mode=False):
         if pending_orders:
             last_order = pending_orders[-1]
             choices = [{'name': 'Yes', 'value': 'Y'}, {'name': 'No', 'value': 'N'}]
-            choice = questionary.select("Would you like to continue last order?", choices = choices).ask()
+            choice = questionary.select("Would you like to continue last order?", choices = choices).unsafe_ask()
 
             if choice == "Y":
                 return complete_pending_payment(account, last_order)
@@ -36,7 +36,7 @@ def checkout_basket(account, guest_mode=False):
     distance = calculate_distance(delivery_postcode, country_code)
 
     while distance is None:
-        console.print("Invalid postcode entered.")
+        console.print("[red]An internal error occurred, please try again. If this happens often, please validate the API key provided.[/red]")
         country_code = questionary.text("Enter your country code (US): ").unsafe_ask()
         address = questionary.text("Enter your address: ").unsafe_ask()
         delivery_postcode = questionary.text("Enter your postcode: ").unsafe_ask()
@@ -52,10 +52,9 @@ def checkout_basket(account, guest_mode=False):
 
     console.print(f"The total price in GBP is [bright_cyan]£{total_price}[/bright_cyan]")
     choices = [{'name': 'Yes', 'value': 'Y'}, {'name': 'No', 'value': 'N'}]
-    convert = questionary.select("Would you like to convert the final price to another currency?", choices = choices).ask()
+    convert = questionary.select("Would you like to convert the final price to another currency?", choices = choices).unsafe_ask()
 
     if convert== "Y":
         (symbol, total_price) = convert_currency_command(total_price)
 
-    print(f'guest mode in chekcout is {guest_mode}')
     complete_payment_command(account, total_price, symbol, delivery_details, guest_mode)

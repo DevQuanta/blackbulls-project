@@ -8,7 +8,6 @@ def validate_postcode(postcode, country_code):
     address = lookup_postcode(postcode, country_code)
 
     if address is None:
-        console.print("[bright_red]Postcode does not exist[/bright_red]")
         return None 
 
     return address

@@ -17,3 +17,10 @@ def add_product_to_cart(product_id, product_catalogue, product_map, quantity, ac
     account['basket']['total_price'] += price * quantity
 
     return account
+
+
+def clear_basket(account):
+    account['basket']['items'] = {}
+    account['basket']['total_price'] = {}
+    
+    return account

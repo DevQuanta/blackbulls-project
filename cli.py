@@ -1,15 +1,39 @@
+from rich.console import Console
+
 from commands.basket_commands import checkout_basket
 from commands.account_commands import create_account_command
 from ui.products_ui import fetch_basket, diaplay_previous_orders
-from commands.products_commands import browse_products
+from commands.products_commands import browse_products, clear_basket
 from commands.account_commands import login_account_command
 
 import questionary
+console = Console()
+
+def go_to_basket(account, guest_mode=False):
+    menu_items = ["View basket", "Clear basket", "Checkout basket", "Go back"]
+    choices = [{
+        'name': item, 'value': idx
+    } for idx, item in enumerate(menu_items)]
+
+    option_idx = questionary.select("Choose an action", choices=choices).unsafe_ask()
+    
+    while option_idx is not None and option_idx != 3:
+        match option_idx:
+            case 0:
+                fetch_basket(account)
+            case 1:
+                clear_basket(account)
+            case 2:
+                checkout_basket(account, guest_mode)
+            case 3:
+                continue
+
+        option_idx = questionary.select("Choose an action", choices=choices).unsafe_ask()
 
 def logged_in_mode(account):
-    print(f"Welcome back, {account['name']}!\n")
+    console.print(f"[green]Welcome back, {account['name']}![/green]")
 
-    menu_items = ["View basket", "Checkout basket", "Add products", "View previous orders", "Logout"]
+    menu_items = ["Go to basket", "Add product", "View previous orders", "Logout"]
 
     choices = [{
         'name': item, 'value': idx
@@ -20,21 +44,19 @@ def logged_in_mode(account):
     while option_idx is not None:
         match option_idx:
             case 0:
-                fetch_basket(account)
+                go_to_basket(account)
             case 1:
-                checkout_basket(account)
-            case 2:
                 browse_products(account)
-            case 3:
+            case 2:
                 diaplay_previous_orders(account)
-            case 4:
+            case 3:
                 break
 
         option_idx = questionary.select("Choose an action:", choices=choices).unsafe_ask()
                 
 
 def guest_mode():
-    menu_items = ["View basket", "Checkout basket", "Add products", "Quit"]
+    menu_items = ["Go to basket", "Add product", "Login", "Quit"]
     
     choices = [
         {"name": item, "value": idx} 
@@ -48,11 +70,16 @@ def guest_mode():
     while option_idx is not None:
         match option_idx:
             case 0:
-                fetch_basket(account)
+                go_to_basket(account, guest_mode=True)
             case 1:
-                checkout_basket(account, guest_mode=True)
+                browse_products(account)
             case 2:
-                browse_products(account, guest_mode=True)
+                account = login_account_command()
+
+                if account is None:
+                    continue
+
+                logged_in_mode(account)
             case 3:
                 break
 

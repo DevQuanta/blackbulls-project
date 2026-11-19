@@ -12,7 +12,7 @@ def login_account_command():
     account = get_account(email, password)
 
     while account is None:
-        print("Incorrect email or password. Please try again!\n")
+        console.print("[red]Incorrect email or password. Please try again![/red]")
         email = questionary.text("Please enter your email: ").unsafe_ask()
         password = questionary.password("Please enter your password: ").unsafe_ask()
         account = get_account(email, password)
@@ -29,7 +29,7 @@ def create_account_command(guest_account = False):
         repeat_password = questionary.password("Please confirm your password: ").unsafe_ask()
 
         while repeat_password != password:
-            print("To confirm your password...you must type it out again.")
+            console.print("[red]Password does not match, please try again.[/red]")
             password = questionary.password("What is your password? ", validate=validate_password).unsafe_ask()
             repeat_password = questionary.password("Please confirm your password: ").unsafe_ask()
 

@@ -51,11 +51,10 @@ def get_currency_value(original_c, new_c, amount):
     if original_c == new_c:
         return amount
 
-    o_exchange_rate = calculate_exchange_rate(original_c, 'usd')
-    n_exchange_rate = calculate_exchange_rate('usd', new_c)
-    in_usd = o_exchange_rate * amount
-    to_new_c = (1 / n_exchange_rate) * in_usd
-    return to_new_c
+    exchange_rate = calculate_exchange_rate(original_c, new_c)
+    converted_amt = exchange_rate * amount
+
+    return converted_amt
 
 def convert_currency(original_c, new_c, amount):
     if validate_range(original_c, amount):
