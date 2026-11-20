@@ -21,6 +21,6 @@ def add_product_to_cart(product_id, product_catalogue, product_map, quantity, ac
 
 def clear_basket(account):
     account['basket']['items'] = {}
-    account['basket']['total_price'] = {}
+    account['basket']['total_price'] = 0
     
     return account
